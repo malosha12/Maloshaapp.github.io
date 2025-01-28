@@ -28,7 +28,7 @@
     }
 
     h1 {
-      color: #ffffff; /* Rangi ya kijani kwa kichwa */
+      color: #fff; /* Rangi nyeupe kwa kichwa */
     }
 
     .section {
@@ -67,7 +67,7 @@
     }
 
     button {
-      background-color: #9a40ff#c440ff; /* Rangi ya buluu */
+      background-color: #3498db; /* Rangi ya buluu */
       color: white;
       padding: 12px 18px;
       border: none;
@@ -113,7 +113,7 @@
     }
 
     .income-section {
-      background-color: #ce55ff; /* Rangi ya kijani kwa mapato */
+      background-color: #a42bff; /* Rangi ya kijani kwa mapato */
       padding: 15px;
       border-radius: 8px;
       color: white;
@@ -121,7 +121,7 @@
     }
 
     .expense-section {
-      background-color: #3498db; /* Rangi ya buluu kwa matumizi */
+      background-color: #8540ff; /* Rangi ya buluu kwa matumizi */
       padding: 15px;
       border-radius: 8px;
       color: white;
@@ -146,25 +146,38 @@
       border-radius: 50%;
       margin: 10px auto;
       box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-      transition: background-color 0.3s ease;
+      opacity: 0; /* Hapa inakuwa 0 kwa taa zote kabla ya kuhesabu */
+      transition: opacity 1s ease-in-out;
     }
 
-    .red.active {
-      background-color: red;
+    .red {
+      background-color: red; /* Taa nyekundu */
     }
 
-    .yellow.active {
-      background-color: yellow;
+    .green {
+      background-color: green; /* Taa kijani */
     }
 
-    .green.active {
-      background-color: green;
+    .yellow {
+      background-color: yellow; /* Taa njano */
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>MALOSHA BUDGET LAYOUT</h1>
+    <h1>MALOSHA BUDGET APP</h1>
     
     <!-- Sehemu ya Mapato -->
     <div class="income-section">
@@ -194,9 +207,9 @@
     <div id="history-content"></div>
 
     <div class="traffic-light">
-      <div class="light red"></div>
-      <div class="light yellow"></div>
-      <div class="light green"></div>
+      <div class="light red"></div> <!-- Taa nyekundu -->
+      <div class="light yellow"></div> <!-- Taa njano -->
+      <div class="light green"></div> <!-- Taa kijani -->
     </div>
   </div>
 
@@ -204,6 +217,7 @@
     let incomeTotal = 0;
     let expensesTotal = 0;
     let history = [];
+    let lightsInterval;
 
     function addIncome() {
       const item = document.getElementById('income-item').value;
@@ -248,6 +262,12 @@
     }
 
     function calculate() {
+      // Hakikisha mapato na matumizi vimehesabiwa
+      if (incomeTotal === 0 || expensesTotal === 0) {
+        alert("Tafadhali ingiza mapato na matumizi kabla ya kufanya hesabu.");
+        return;
+      }
+
       // Rekodi historia ya hesabu na tarehe/muda
       const timestamp = new Date().toLocaleString();
       history.push(`[${timestamp}] Hesabu: Mapato = ${incomeTotal} Tsh, Matumizi = ${expensesTotal} Tsh`);
@@ -255,15 +275,22 @@
       const lights = document.querySelectorAll('.light');
       const percentage = (expensesTotal / incomeTotal) * 100;
 
-      // Ondoa class 'active' kwenye taa zote
-      lights.forEach(light => light.classList.remove('active'));
+      // Ondoa opacity kwenye taa zote
+      lights.forEach(light => light.style.opacity = 0); // Zima taa zote kwa opacity 0
 
+      // Hakikisha taa inawaka kulingana na mapato na matumizi
       if (percentage > 100) {
-        lights[0].classList.add('active'); // Nyekundu
+        const redLight = document.querySelector('.red');
+        redLight.style.opacity = 1; // Nyekundu inawaka
+        redLight.style.animation = "fade 2s infinite alternate"; // Animations ya kupungua na kuongezeka
       } else if (percentage === 100) {
-        lights[1].classList.add('active'); // Njano
+        const yellowLight = document.querySelector('.yellow');
+        yellowLight.style.opacity = 1; // Njano inawaka
+        yellowLight.style.animation = "fade 2s infinite alternate"; // Animations ya kupungua na kuongezeka
       } else {
-        lights[2].classList.add('active'); // Kijani
+        const greenLight = document.querySelector('.green');
+        greenLight.style.opacity = 1; // Kijani inawaka
+        greenLight.style.animation = "fade 2s infinite alternate"; // Animations ya kupungua na kuongezeka
       }
 
       alert(`Jumla ya Mapato: ${incomeTotal} Tsh\nJumla ya Matumizi: ${expensesTotal} Tsh\nAsilimia ya Matumizi: ${percentage.toFixed(2)}%`);
